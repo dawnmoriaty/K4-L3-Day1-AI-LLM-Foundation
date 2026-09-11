@@ -81,7 +81,7 @@ thích 1–2 lựa chọn từ ngữ quan trọng trong prompt (ví dụ: vì sa
 **Trợ lý của bạn hiện có hạn chế lớn nhất là gì (ví dụ: history chỉ 3 lượt,
 không có bộ nhớ dài hạn, không kiểm duyệt nội dung...)? Đề xuất một cải
 thiện cụ thể và mô tả ngắn cách triển khai:**
-> Hạn chế lớn nhất là việc cắt tỉa cứng nhắc lịch sử hội thoại còn 3 lượt gần nhất (6 messages), khiến trợ lý quên mất các yêu cầu cốt lõi được thống nhất ở đầu phiên làm việc. Cải thiện đề xuất: Triển khai cơ chế Memory Summarization (Bộ nhớ tóm tắt) — mỗi khi lịch sử hội thoại vượt quá 6 tin nhắn, hệ thống sử dụng một model mini (như GPT-4o-mini) chạy ngầm để tóm tắt các thỏa thuận cũ thành một đoạn văn ngắn và ghim vào system prompt. Bằng cách này, trợ lý vẫn giữ được toàn bộ ngữ cảnh xuyên suốt phiên làm việc mà không làm phình to chi phí token.
+> Hạn chế lớn nhất là việc cắt tỉa cứng nhắc lịch sử hội thoại còn 3 lượt gần nhất (6 messages), khiến trợ lý quên mất các yêu cầu cốt lõi được thống nhất ở đầu phiên làm việc. Cải thiện đề xuất: Triển khai cơ chế Memory Summarization (Bộ nhớ tóm tắt) — mỗi khi lịch sử hội thoại vượt quá 6 tin nhắn, hệ thống sử dụng một model mini (như GPT-4o-mini) chạy ngầm để tóm tắt các thỏa thuận cũ thành một đoạn văn ngắn và ghim vào system prompt. Bằng cách này, trợ lý vẫn giữ được toàn bộ ngữ cảnh xuyên suốt phiên làm việc mà không làm phình to chi phí token.Ngoài ra cònn cần có lưu lịch sử vào cache (nên dungf redis lưu )hoặc tạo gateway rồi cach , cơ chế tương tự nhu là làm microservice thông thường , cache trên ram người dùng sẽ tăng trải nghiệm giảm tải nếu hỏi lại nhiều , có nhiều cơ chế share cache ví dụ 1000 người dùng lưu tạm trên 1 vài máy rảnh sau này cần chỉ cần truy xuất là ra
 
 ---
 
