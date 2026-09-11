@@ -13,7 +13,7 @@ trả lời thật (chấm tự động sẽ đếm số câu đã trả lời).
 ### Câu 1.1 — Độ nhạy của temperature
 Gọi `call_openai` với temperature 0.0, 0.5, 1.0 và 1.5 dùng prompt
 **"Hãy kể cho tôi một sự thật thú vị về Việt Nam."**
-
+ 
 **Bạn nhận thấy quy luật gì qua bốn phản hồi?** (2–3 câu)
 > Ở temperature = 0.0, phản hồi mang tính tất định (deterministic), câu từ gãy gọn và luôn lặp lại cùng một sự thật phổ biến (như Hang Sơn Đoòng hoặc bờ biển dài hình chữ S). Khi tăng lên 0.5 - 1.0, văn phong trở nên tự nhiên, linh hoạt và phong phú hơn. Tuy nhiên ở mức 1.5, mô hình trở nên quá ngẫu hứng, câu từ bắt đầu lan man, cấu trúc ngữ pháp thiếu chuẩn xác và xuất hiện nguy cơ bịa đặt thông tin (hallucination).
 
