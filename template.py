@@ -71,7 +71,7 @@ def call_openai(
     # TODO: import OpenAI, tạo client, gọi chat.completions.create,
     #       đo start/end time, trả về (response_text, latency)
     import time
-    from openai import OpenAI  # Luôn import bên trong hàm theo yêu cầu của lab
+    from openai import OpenAI  
     
     client = OpenAI(
         api_key=os.getenv("OPENAI_API_KEY"),
@@ -181,7 +181,29 @@ def chat_with_system_prompt(
         ]
     """
     # TODO: giống call_openai nhưng messages có thêm phần tử role="system"
-    raise NotImplementedError("Implement chat_with_system_prompt")
+    import time
+    from openai import OpenAI
+        
+    client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("OPENAI_BASE_URL"),
+        )
+        
+    messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        
+    start = time.perf_counter()
+    response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+    latency = time.perf_counter() - start
+        
+    return response.choices[0].message.content, latency
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +230,12 @@ def count_tokens(text: str, model: str = OPENAI_MODEL) -> int:
         max(1, len(text) // 4)   (trung bình 1 token ≈ 4 ký tự)
     """
     # TODO: dùng tiktoken để đếm token, có fallback khi lỗi
-    raise NotImplementedError("Implement count_tokens")
+    import tiktoken
+    try:
+        enc = tiktoken.encoding_for_model(model)
+        return len(enc.encode(text))
+    except Exception:
+        return max(1, len(text) // 4)
 
 
 # ---------------------------------------------------------------------------
@@ -235,7 +262,22 @@ def estimate_cost(prompt: str, response: str, model: str = OPENAI_MODEL) -> dict
          miễn phí — thì lấy giá gpt-4o làm tham chiếu học tập)
     """
     # TODO: đếm token prompt/response, tra bảng giá, trả về dict 5 key
-    raise NotImplementedError("Implement estimate_cost")
+    input_tokens = count_tokens(prompt, model=model)
+    output_tokens = count_tokens(response, model=model)
+    
+    pricing = PRICING_PER_1K_TOKENS.get(model, PRICING_PER_1K_TOKENS["gpt-4o"])
+    
+    input_cost = (input_tokens / 1000) * pricing["input"]
+    output_cost = (output_tokens / 1000) * pricing["output"]
+    total_cost = input_cost + output_cost
+    
+    return {
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "input_cost": input_cost,
+        "output_cost": output_cost,
+        "total_cost":total_cost,
+        }
 
 
 # ===========================================================================
@@ -263,8 +305,45 @@ def streaming_chatbot() -> None:
         - Sau mỗi lượt, thêm phản hồi assistant vào history.
         - Cắt history còn 3 lượt cuối (6 message): history = history[-6:]
     """
-    # TODO: vòng lặp while, đọc input, stream phản hồi, duy trì history
-    raise NotImplementedError("Implement streaming_chatbot")
+    import time
+    from openai import OpenAI
+    
+    client = OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        base_url=os.getenv("OPENAI_BASE_URL"),
+    )
+    
+    history = []
+    
+    while True:
+        user_input = input("Bạn: ")
+        if user_input.strip().lower() in ("quit", "exit"):
+            print("Thoát chatbot.")
+            break
+        
+        messages = [{"role": "system", "content": "Bạn là trợ lý thân thiện."}] + history + [{"role": "user", "content": user_input}]
+        
+        stream = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=messages,
+            stream=True
+        )
+        
+        print("Trợ lý: ", end="", flush=True)
+        assistant_response = ""
+        
+        for chunk in stream:
+            delta = chunk.choices[0].delta.get("content", "")
+            print(delta, end="", flush=True)
+            assistant_response += delta
+        
+        print()  # New line after assistant response
+        
+        history.append({"role": "user", "content": user_input})
+        history.append({"role": "assistant", "content": assistant_response})
+        
+        # Keep only the last 3 turns (6 messages)
+        history = history[-6:]
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +370,16 @@ def retry_with_backoff(
         Exception cuối cùng của fn() sau khi hết số lần thử.
     """
     # TODO: vòng lặp retry với exponential backoff
+    for attempt in range(max_retries + 1):
+        try:
+            return fn()
+        except Exception as e:
+            if attempt == max_retries:
+                raise  # Re-raise the last exception
+            else:
+                delay = base_delay * (2 ** attempt)
+                print(f"Attempt {attempt + 1} failed: {e}. Retrying in {delay:.2f} seconds...")
+                time.sleep(delay)
     raise NotImplementedError("Implement retry_with_backoff")
 
 
@@ -350,7 +439,7 @@ def run_assistant(
                 "total_cost": total_cost, "history": history}
     """
     # TODO: triển khai theo khung sườn trong docstring
-    raise NotImplementedError("Implement run_assistant")
+    
 
 
 # ===========================================================================
