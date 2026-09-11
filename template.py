@@ -380,7 +380,6 @@ def retry_with_backoff(
                 delay = base_delay * (2 ** attempt)
                 print(f"Attempt {attempt + 1} failed: {e}. Retrying in {delay:.2f} seconds...")
                 time.sleep(delay)
-    raise NotImplementedError("Implement retry_with_backoff")
 
 
 # ===========================================================================
@@ -439,6 +438,42 @@ def run_assistant(
                 "total_cost": total_cost, "history": history}
     """
     # TODO: triển khai theo khung sườn trong docstring
+    if get_input is None:
+        get_input = input
+    from openai import OpenAI   
+    client = OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        base_url=os.getenv("OPENAI_BASE_URL"),
+    )
+    history, num_turns, total_tokens, total_cost = [], 0, 0, 0.0
+    while True:
+        if max_turns is not None and num_turns >= max_turns:
+            break
+        user_msg = get_input()
+        if user_msg.strip().lower() in ("quit", "exit"):
+            break
+        messages = ([{"role": "system", "content": persona}]
+                    + history + [{"role": "user", "content": user_msg}])
+        stream = retry_with_backoff(
+            lambda: client.chat.completions.create(
+                model=OPENAI_MODEL, messages=messages, stream=True,
+            )
+        )
+        reply = ""
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content or ""
+            print(delta, end="", flush=True)
+            reply += delta
+        print()
+        history.append({"role": "user", "content": user_msg})
+        history.append({"role": "assistant", "content": reply})
+        history = history[-6:]
+        num_turns += 1
+        total_tokens += count_tokens(user_msg) + count_tokens(reply)
+        total_cost += estimate_cost(user_msg, reply)["total_cost"]
+    return {"num_turns": num_turns, "total_tokens": total_tokens,
+            "total_cost": total_cost, "history": history}  
+
     
 
 
@@ -453,8 +488,12 @@ def batch_compare(prompts: list[str]) -> list[dict]:
         List các dict — mỗi dict là kết quả compare_models kèm thêm
         key "prompt" chứa prompt gốc.
     """
-    # TODO (bonus): lặp qua prompts, gọi compare_models, thêm key "prompt"
-    raise NotImplementedError("Implement batch_compare")
+    results = []
+    for prompt in prompts:
+        res = compare_models(prompt)
+        res_with_prompt = {"prompt": prompt, **res}
+        results.append(res_with_prompt)
+    return results
 
 
 def format_comparison_table(results: list[dict]) -> str:
@@ -464,8 +503,20 @@ def format_comparison_table(results: list[dict]) -> str:
     Cột: Prompt | GPT-4o Response | Mini Response | GPT-4o Latency | Mini Latency
     Gợi ý: cắt text dài còn 40 ký tự cho dễ nhìn.
     """
-    # TODO (bonus): dựng chuỗi bảng và trả về
-    raise NotImplementedError("Implement format_comparison_table")
+    lines = [
+        f"{'Prompt':<42} | {'GPT-4o Response':<42} | {'Mini Response':<42} | {'GPT-4o Lat':<10} | {'Mini Lat':<10}",
+        "-" * 160,
+    ]
+    for r in results:
+        p = (r.get("prompt", "")[:39] + "…") if len(r.get("prompt", "")) > 40 else r.get("prompt", "")
+        g_resp = r.get("gpt4o_response", "").replace("\n", " ")
+        g_resp = (g_resp[:39] + "…") if len(g_resp) > 40 else g_resp
+        m_resp = r.get("mini_response", "").replace("\n", " ")
+        m_resp = (m_resp[:39] + "…") if len(m_resp) > 40 else m_resp
+        g_lat = f"{r.get('gpt4o_latency', 0.0):.2f}s"
+        m_lat = f"{r.get('mini_latency', 0.0):.2f}s"
+        lines.append(f"{p:<42} | {g_resp:<42} | {m_resp:<42} | {g_lat:<10} | {m_lat:<10}")
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
