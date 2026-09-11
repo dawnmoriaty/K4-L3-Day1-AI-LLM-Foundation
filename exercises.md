@@ -12,10 +12,11 @@ trả lời thật (chấm tự động sẽ đếm số câu đã trả lời).
 
 ### Câu 1.1 — Độ nhạy của temperature
 Gọi `call_openai` với temperature 0.0, 0.5, 1.0 và 1.5 dùng prompt
-**"Hãy kể cho tôi một sự thật thú vị về Việt Nam."**
+>python template.py
+('Here is what I need to be relevant to the user\'s question: "Hãy kể cho tôi một sự thật thú vị về Việt Nam." (Tell me an interesting fact about Vietnam fact.)\n\nThe user wants an interesting fact Vietnam. I should provide a single interesting fact about Vietnam in Vietnamese or so the user asked in Vietnamese. I\'ll provide one fact a fact that\'s interesting and true.\n\nI need to pick a fact that\'s verifiable and interesting. Some options:\n\n- Vietnam has the most UNESCO World Heritage sites in Southeast Asia.\n- It\'s home to the world\'s largest cave (Son Doong).\n- It has the largest network of caves in the world.\n- It\'s the world\'s largest exporter of cashew nuts and rice.\n- It has a young population (median age ~32).\n- It has a very diverse ecosystem (Mekong Delta, etc.).\n\nI will choose the UNESCO World Heritage sites fact, as it\'s a strong point of pride and widely known. Or perhaps the cave fact is more "thú vị" (interesting). Let\'s do the Son Doong Cave fact, as it\'s very "thú vị" (interesting/wow factor).\n\nFact: Vietnam is home to Son Doong Cave, the', 98.74761969999963)
  
 **Bạn nhận thấy quy luật gì qua bốn phản hồi?** (2–3 câu)
-> Ở temperature = 0.0, phản hồi mang tính tất định (deterministic), câu từ gãy gọn và luôn lặp lại cùng một sự thật phổ biến (như Hang Sơn Đoòng hoặc bờ biển dài hình chữ S). Khi tăng lên 0.5 - 1.0, văn phong trở nên tự nhiên, linh hoạt và phong phú hơn. Tuy nhiên ở mức 1.5, mô hình trở nên quá ngẫu hứng, câu từ bắt đầu lan man, cấu trúc ngữ pháp thiếu chuẩn xác và xuất hiện nguy cơ bịa đặt thông tin (hallucination).
+> Ở temperature = 0.0, phản hồi mang tính tất định (deterministic), câu từ gãy gọn và luôn lặp lại cùng một sự thật phổ biến (như Hang Sơn Đoòng hoặc bờ biển dài hình chữ S). Khi tăng lên 0.5 - 1.0, văn phong trở nên tự nhiên, linh hoạt và phong phú hơn. Tuy nhiên ở mức 1.5, mô hình trở nên quá ngẫu hứng, câu từ bắt đầu lan man, cấu trúc ngữ pháp thiếu chuẩn xác và xuất hiện nguy cơ bịa đặt thông tin (hallucination).Call bằng anthropic thì max là 1 :D , ko gọi được 1.5
 
 ### Câu 1.2 — Chọn temperature cho sản phẩm
 **Bạn sẽ đặt temperature bao nhiêu cho chatbot hỗ trợ khách hàng, và tại sao?**
