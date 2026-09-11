@@ -13,9 +13,29 @@ trả lời thật (chấm tự động sẽ đếm số câu đã trả lời).
 ### Câu 1.1 — Độ nhạy của temperature
 Gọi `call_openai` với temperature 0.0, 0.5, 1.0 và 1.5 dùng prompt
 **"Hãy kể cho tôi một sự thật thú vị về Việt Nam."**
+=== Temperature 0.5 (mất 6.05s) ===
+Here's a thinking process:
 
+1.  **Analyze User Request:**
+   - User asks: "Hãy kể cho tôi một sự thật thú vị về Việt Nam." (Tell me an interesting fact about Vietnam.)
+   - Language: Vietnamese
+   - Goal: Provide one interesting, accurate, and engaging fact about Vietnam.
+
+2.  **Identify Key Constraints:**
+   - Must be a "fact" (true, verifiable)
+   - Should be "interesting" (engaging, surprising, culturally/naturally significant)
+   - Language: Vietnamese
+   - Format: Just tell the fact (no need for excessive structure, but should be clear)
+
+3.  **Brainstorm Potential Facts About Vietnam:**
+   - Longest coastline in Southeast Asia? Actually, it's very long, but maybe not the absolute longest.
+   - World's largest pig producer? Not sure if that's the most "interesting" fact.
+   - Vietnamese alphabet (Chữ Nôm, Quốc Ngữ) creation by Alexandre de Rhodes.
+   - Vietnam has 8 UNESCO World Heritage Sites.
+   - The country is shaped like an 'S' and has diverse geography from north to south.
+   - It's one of the few countries where you can
 **Bạn nhận thấy quy luật gì qua bốn phản hồi?** (2–3 câu)
-> *Câu trả lời của bạn*
+> Chưa trả lời tiếng việt , dạng pha trộn nghia , tập trung quá về nước ngoài , prompt chưa cấu hình rule để trả tiếng việt ()
 
 ### Câu 1.2 — Chọn temperature cho sản phẩm
 **Bạn sẽ đặt temperature bao nhiêu cho chatbot hỗ trợ khách hàng, và tại sao?**
