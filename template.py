@@ -15,7 +15,6 @@ Hướng dẫn:
 import os
 import time
 from typing import Any, Callable
-
 from dotenv import load_dotenv
 
 # Nạp OPENAI_API_KEY từ file .env (copy .env.example thành .env và dán key vào)
@@ -71,7 +70,24 @@ def call_openai(
     """
     # TODO: import OpenAI, tạo client, gọi chat.completions.create,
     #       đo start/end time, trả về (response_text, latency)
-    raise NotImplementedError("Implement call_openai")
+    import time
+    from openai import OpenAI  # Luôn import bên trong hàm theo yêu cầu của lab
+    
+    client = OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        base_url=os.getenv("OPENAI_BASE_URL"),  
+    )
+    start = time.perf_counter()
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=temperature,
+        top_p=top_p,
+        max_tokens=max_tokens,
+    )
+    latency = time.perf_counter() - start
+    
+    return response.choices[0].message.content, latency
 
 
 # ---------------------------------------------------------------------------
